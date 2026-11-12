@@ -1,0 +1,55 @@
+name: DvorakKeys
+
+options:
+  bundleIdPrefix: com.dvorakkeys
+  deploymentTarget:
+    iOS: "16.0"
+  createIntermediateGroups: true
+
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    MARKETING_VERSION: "1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    TARGETED_DEVICE_FAMILY: "1"
+
+targets:
+  DvorakKeys:
+    type: application
+    platform: iOS
+    sources:
+      - DvorakKeys
+    info:
+      path: Plists/App-Info.plist
+      properties:
+        CFBundleDisplayName: Dvorak Keys
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.dvorakkeys.app
+    dependencies:
+      - target: DvorakKeysKeyboard
+
+  DvorakKeysKeyboard:
+    type: app-extension
+    platform: iOS
+    sources:
+      - DvorakKeysKeyboard
+    info:
+      path: Plists/Keyboard-Info.plist
+      properties:
+        CFBundleDisplayName: Dvorak Keys
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.keyboard-service
+          NSExtensionPrincipalClass: $(PRODUCT_MODULE_NAME).KeyboardViewController
+          NSExtensionAttributes:
+            IsASCIICapable: true
+            PrimaryLanguage: en-US
+            # Necessário para o haptic (vibração) funcionar dentro do teclado.
+            # O código não tem nenhuma rede nem grava o que você digita.
+            RequestsOpenAccess: true
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.dvorakkeys.app.keyboard
