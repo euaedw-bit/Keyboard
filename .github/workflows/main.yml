@@ -44,6 +44,15 @@ jobs:
           cp -R build/Build/Products/Release-iphoneos/DvorakKeys.app Payload/
           zip -qr DvorakKeys.ipa Payload
 
+      - name: Verificar se o teclado esta dentro do app
+        shell: bash
+        run: |
+          echo "=== Conteudo do app ==="
+          find Payload -maxdepth 3 | sort
+          echo "=== Info.plist do teclado ==="
+          plutil -p Payload/DvorakKeys.app/PlugIns/DvorakKeysKeyboard.appex/Info.plist
+          test -d Payload/DvorakKeys.app/PlugIns/DvorakKeysKeyboard.appex
+
       - name: Enviar IPA
         uses: actions/upload-artifact@v4
         with:
