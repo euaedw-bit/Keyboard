@@ -1,0 +1,51 @@
+name: Build IPA
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Mostrar versão do Xcode
+        shell: bash
+        run: xcodebuild -version
+
+      - name: Instalar XcodeGen
+        shell: bash
+        run: brew install xcodegen
+
+      - name: Gerar projeto Xcode
+        shell: bash
+        run: xcodegen generate
+
+      - name: Compilar (sem assinatura)
+        shell: bash
+        run: |
+          xcodebuild \
+            -project DvorakKeys.xcodeproj \
+            -scheme DvorakKeys \
+            -configuration Release \
+            -sdk iphoneos \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            build
+
+      - name: Empacotar IPA
+        shell: bash
+        run: |
+          mkdir -p Payload
+          cp -R build/Build/Products/Release-iphoneos/DvorakKeys.app Payload/
+          zip -qr DvorakKeys.ipa Payload
+
+      - name: Enviar IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: DvorakKeys-ipa
+          path: DvorakKeys.ipa
